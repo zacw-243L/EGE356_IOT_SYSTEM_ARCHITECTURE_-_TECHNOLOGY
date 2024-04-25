@@ -39,6 +39,9 @@ void setup() {
   
   // start the serial connection
   Serial.begin(115200);
+  Serial.println();
+  Serial.print("ESP Board MAC Address:  ");
+  Serial.println(WiFi.macAddress());
 
   // wait for serial monitor to open
   while(! Serial);
@@ -62,6 +65,7 @@ void setup() {
   // we are connected
   Serial.println();
   Serial.println(io.statusText());
+  Serial.println(WiFi.localIP());
   digital_lab1 ->get();
 
 }
