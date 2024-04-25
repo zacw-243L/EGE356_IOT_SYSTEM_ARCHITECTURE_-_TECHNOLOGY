@@ -21,23 +21,7 @@
 /************************ Example Starts Here *******************************/
 
 // digital pin 5
-#define LED_PIN 5
-
-// this function is called whenever an 'digital' feed message
-// is received from Adafruit IO. it was attached to
-// the 'digital' feed in the setup() function above.
-void LED_ctrlmsg(AdafruitIO_Data *data) {
-
-  Serial.print("received <- ");
-
-  if(data->toPinLevel() == HIGH)
-    Serial.println("HIGH");
-  else
-    Serial.println("LOW");
-
-
-  digitalWrite(LED_PIN, !(data->toPinLevel()));
-}
+#define LED_PIN 10
 
 // set up the 'digital' feed
 AdafruitIO_Feed *digital_lab1 = io.feed("lab1_led");
@@ -90,4 +74,20 @@ void loop() {
   // io.adafruit.com, and processes any incoming data.
   io.run();
 
+}
+
+// this function is called whenever an 'digital' feed message
+// is received from Adafruit IO. it was attached to
+// the 'digital' feed in the setup() function above.
+void LED_ctrlmsg(AdafruitIO_Data *data) {
+
+  Serial.print("received <- ");
+
+  if(data->toPinLevel() == HIGH)
+    Serial.println("HIGH");
+  else
+    Serial.println("LOW");
+
+
+  digitalWrite(LED_PIN, !(data->toPinLevel()));
 }
