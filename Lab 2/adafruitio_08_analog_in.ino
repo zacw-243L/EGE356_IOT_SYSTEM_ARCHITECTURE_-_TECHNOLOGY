@@ -34,8 +34,9 @@ AdafruitIO_Feed analog_led = io.feed("lab2_ledctrl");
 AdafruitIO_Feed *analog_lgage = io.feed("lab2_linegage");
 
 void setup() {
+  M5.begin();
   
-    // set up led pin as an analog output
+  // set up led pin as an analog output
   #if defined(ARDUINO_ARCH_ESP32)
     #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 1, 1)
       // New ESP32 LEDC API
@@ -74,6 +75,9 @@ void setup() {
     delay(500);
   }
 
+  M5.Lcd.setCursor(30,40,2);
+  M5.Lcd.print(WiFi.localIP()); //display ip address
+  
   // we are connected
   Serial.println();
   Serial.println(io.statusText());
@@ -119,6 +123,10 @@ void handleMessage(AdafruitIO_Data *data) {
 
   Serial.print("received <- ");
   Serial.println(reading);
+  current = reading;
+  analog_lgage->save(current/255.0*100);
+  Serial.print("sending <- ");
+  Serial.println(current/255.0*100);
 
   // write the current 'reading' to the led
   analogWrite(LED_PIN, reading);
