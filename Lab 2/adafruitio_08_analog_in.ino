@@ -63,7 +63,7 @@ void loop() {
   io.run();
 
   // grab the current state of the photocell
-  current = analogRead(PHOTOCELL_PIN);
+  current = analogRead(TRIMMER_PIN);
 
   // return if the value hasn't changed
   if(current == last)
