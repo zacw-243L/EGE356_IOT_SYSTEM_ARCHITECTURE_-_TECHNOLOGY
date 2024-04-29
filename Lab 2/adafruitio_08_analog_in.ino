@@ -31,7 +31,7 @@ int last = -1;
 // set up the 'analog' feed
 AdafruitIO_Feed *analog = io.feed("lab2_gauge");
 AdafruitIO_Feed *analog_led = io.feed("lab2_ledctrl");
-AdafruitIO_Feed *analog_lgage = io.feed("lab2_linegage");
+AdafruitIO_Feed *analog_lgage = io.feed("lab2_lingage");
 
 void setup() {
   M5.begin();
