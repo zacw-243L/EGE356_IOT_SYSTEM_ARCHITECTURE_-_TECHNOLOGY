@@ -17,7 +17,7 @@
 // and any additional configuration needed for WiFi, cellular,
 // or ethernet clients.
 #include "config.h"
-
+#include <M5StickCPlus.h>
 /************************ Example Starts Here *******************************/
 
 // analog pin 0
