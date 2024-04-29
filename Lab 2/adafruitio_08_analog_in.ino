@@ -21,14 +21,14 @@
 /************************ Example Starts Here *******************************/
 
 // analog pin 0
-#define PHOTOCELL_PIN A0
+#define TRIMMER_PIN 33
 
 // photocell state
 int current = 0;
 int last = -1;
 
 // set up the 'analog' feed
-AdafruitIO_Feed *analog = io.feed("analog");
+AdafruitIO_Feed *analog = io.feed("lab2_gauge");
 
 void setup() {
 
