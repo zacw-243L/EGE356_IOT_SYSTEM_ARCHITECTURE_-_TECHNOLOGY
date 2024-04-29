@@ -22,6 +22,7 @@
 
 // analog pin 0
 #define TRIMMER_PIN 33
+#define LED_PIN 26
 
 // photocell state
 int current = 0;
@@ -29,9 +30,25 @@ int last = -1;
 
 // set up the 'analog' feed
 AdafruitIO_Feed *analog = io.feed("lab2_gauge");
+AdafruitIO_Feed analog_led = io.feed("lab2_ledctrl");
+AdafruitIO_Feed *analog_lgage = io.feed("lab2_linegage");
 
 void setup() {
-
+  
+    // set up led pin as an analog output
+  #if defined(ARDUINO_ARCH_ESP32)
+    #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 1, 1)
+      // New ESP32 LEDC API
+      ledcAttach(LED_PIN, 12000, 8); // 12 kHz PWM, 8-bit resolution
+    #else
+      // Legacy ESP32 LEDC API
+      ledcAttachPin(LED_PIN, 1);
+      ledcSetup(1, 1200, 8);
+    #endif
+  #else
+    pinMode(LED_PIN, OUTPUT);
+  #endif
+  
   // start the serial connection
   Serial.begin(115200);
   Serial.println();
@@ -44,6 +61,12 @@ void setup() {
   // connect to io.adafruit.com
   Serial.print("Connecting to Adafruit IO");
   io.connect();
+  
+  // set up a message handler for the 'analog' feed.
+  // the handleMessage function (defined below)
+  // will be called whenever a message is
+  // received from adafruit io.
+  analog_led->onMessage(handleMessage);
 
   // wait for a connection
   while(io.status() < AIO_CONNECTED) {
