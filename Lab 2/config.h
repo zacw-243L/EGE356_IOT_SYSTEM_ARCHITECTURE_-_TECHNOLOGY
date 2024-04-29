@@ -3,7 +3,7 @@
 // visit io.adafruit.com if you need to create an account,
 // or if you need your Adafruit IO key.
 #define IO_USERNAME  "Studentwastaken"
-#define IO_KEY       "aio_DImV08UXGnPmmo4EnRZPvibb77Ia"
+#define IO_KEY       "aio_XMMH91GteonKJ1mGqYyCIflEZswZ"
 
 /******************************* WIFI **************************************/
 
