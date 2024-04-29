@@ -77,6 +77,7 @@ void setup() {
   // we are connected
   Serial.println();
   Serial.println(io.statusText());
+  analog_led->get();
   Serial.println(WiFi.localIP());
 
 }
@@ -109,4 +110,16 @@ void loop() {
   // because there are no active subscriptions, we can use delay()
   // instead of tracking millis()
   delay(3000);
+}
+
+void handleMessage(AdafruitIO_Data *data) {
+
+  // convert the data to integer
+  int reading = data->toInt();
+
+  Serial.print("received <- ");
+  Serial.println(reading);
+
+  // write the current 'reading' to the led
+  analogWrite(LED_PIN, reading);
 }
