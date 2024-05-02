@@ -27,6 +27,8 @@
 // photocell state
 int current = 0;
 int last = -1;
+float temp = 0.00;
+float last_temp = -1.00;
 
 // set up the 'analog' feed
 // AdafruitIO_Feed *analog = io.feed("lab2_gauge");
@@ -100,41 +102,47 @@ void loop() {
   // function. it keeps the client connected to
   // io.adafruit.com, and processes any incoming data.
   io.run();
+  M5.IMU.getTempData(&temp);
 
   // grab the current state of the photocell
-  current = analogRead(TRIMMER_PIN);
+  // current = analogRead(TRIMMER_PIN);
 
   // return if the value hasn't changed
-  if(current == last)
+  if(temp == last_temp)
     return;
 
   // save the current state to the analog feed
-  Serial.print("sending -> ");
-  Serial.println(current);
+  // Serial.print("sending -> ");
+  // Serial.println(current);
   analog->save(current);
 
   // store last photocell state
-  last = current;
+  last_temp = temp;
+
+  Serial.print("sending temperature -> ");
+  Serial.println(temp);
 
   // wait three seconds (1000 milliseconds == 1 second)
   //
   // because there are no active subscriptions, we can use delay()
   // instead of tracking millis()
+  M5.Lcd.setCursor(30, 95);
+  M5.Lcd.printf("Temperature : %.2f C", temp);
   delay(3000);
 }
 
 void handleMessage(AdafruitIO_Data *data) {
 
   // convert the data to integer
-  int reading = data->toInt();
+  // int reading = data->toInt();
 
-  Serial.print("received <- ");
-  Serial.println(reading);
-  current = reading;
-  analog_lgage->save(current/255.0*100);
-  Serial.print("sending <- ");
-  Serial.println(current/255.0*100);
+  // Serial.print("received <- ");
+  // Serial.println(reading);
+  // current = reading;
+  // analog_lgage->save(current/255.0*100);
+  // Serial.print("sending <- ");
+  // Serial.println(current/255.0*100);
 
   // write the current 'reading' to the led
-  analogWrite(LED_PIN, reading);
+  // analogWrite(LED_PIN, reading);
 }
