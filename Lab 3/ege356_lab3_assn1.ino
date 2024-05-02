@@ -173,7 +173,7 @@ void ALERT (AdafruitIO_Data *data){
     // Serial.println(alert1);
     d_alert1->save(current);
     
-  if (speed > 80.0 && temp > alert_temp && alert1 = 1)
+  if (speed > 80.0 && temp > alert_temp && alert1 == 1)
     d_alert1->save(90);
     alert1 = 0;
     Serial.print("sending Alert1 -> ");
