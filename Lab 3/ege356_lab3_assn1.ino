@@ -29,11 +29,19 @@
 float temp = 0.00;
 float last_temp = -1.00;
 
+float alert_temp = 55.0;
+float last_alert_temp = 55.0;
+
+int alert1 = 0;
+int last_alert1 = 0;
+
 // set up the 'analog' feed
 // AdafruitIO_Feed *analog = io.feed("lab2_gauge");
 AdafruitIO_Feed *analog_led = io.feed("lab2_ledctrl");
 AdafruitIO_Feed *analog_lgage = io.feed("lab2_lingage");
 AdafruitIO_Feed *analog_ltemp = io.feed("lab3_ltemp");
+AdafruitIO_Feed *d_alert1 = io.feed("lab3_alert1"); 
+AdafruitIO_Feed *set_th = io.feed("lab3_set_th"); 
 
 void setup() {
   M5.begin();
@@ -135,7 +143,7 @@ void handleMessage(AdafruitIO_Data *data) {
 
   // convert the data to integer
   int reading = data->toInt();
-  bool alertd = false;
+  bool alerted = false;
   
 
   Serial.print("received <- ");
