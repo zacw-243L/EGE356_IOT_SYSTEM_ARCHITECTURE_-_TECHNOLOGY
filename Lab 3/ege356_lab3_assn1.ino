@@ -23,18 +23,6 @@
 // analog pin 0
 #define LED_PIN 26
 
-// photocell state
-// int current = 0;
-// int last = -1;
-float temp = 0.00;
-float last_temp = -1.00;
-
-int alert_temp = 55;
-int last_alert_temp = 55;
-
-int alert1 = 0;
-int last_alert1 = 0;
-
 // set up the 'analog' feed
 // AdafruitIO_Feed *analog = io.feed("lab2_gauge");
 AdafruitIO_Feed *analog_led = io.feed("lab2_ledctrl");
@@ -42,6 +30,15 @@ AdafruitIO_Feed *analog_lgage = io.feed("lab2_lingage");
 AdafruitIO_Feed *analog_ltemp = io.feed("lab3_ltemp");
 AdafruitIO_Feed *d_alert1 = io.feed("lab3_alert1"); 
 AdafruitIO_Feed *set_th = io.feed("lab3_set_th"); 
+
+float temp = 0.00;
+float last_temp = -1.00;
+int alert_temp = 55;
+
+// int last_alert_temp = 55;
+
+int alert1 = 0;
+int last_alert1 = 0;
 
 void setup() {
   M5.begin();
@@ -112,19 +109,9 @@ void loop() {
   io.run();
   M5.IMU.getTempData(&temp);
 
-  // grab the current state of the photocell
-  // current = analogRead(TRIMMER_PIN);
-
   // return if the value hasn't changed
   if(temp == last_temp)
     return;
-
-  // save the current state to the analog feed
-  // Serial.print("sending -> ");
-  // Serial.println(current);
-  // analog->save(current);
-
-  // store last photocell state
   last_temp = temp;
 
   Serial.print("sending temperature -> ");
@@ -157,23 +144,20 @@ void handleMessage(AdafruitIO_Data *data) {
   Serial.println(speed);
   
   //Turns alert red if condition
-  if ((temp>=55.0 & speed>80.0)|alerted == true)
-   delay(5000);//throttle limiter
+  if ((temp>=alert_temp & speed>80.0)|alerted == true)
    d_alert1->save(90); 
+   total+= 2000;
    analog_led ->save(80);
    alerted = true;
   //Turns alert green if condition
   if (temp<55.0 & alerted == true)
-   delay(9000);
    d_alert1->save(70);
+   total+= 2000;
    alerted = false;
-  
-  // analog_lgage->save(current/255.0*100);
-  // Serial.print("sending <- ");
-  // Serial.println(current/255.0*100);
 
+  delay(total);
   // write the current 'reading' to the led
-  analogWrite(LED_PIN, reading);
+  \\analogWrite(LED_PIN, reading);
 }
 
 void set_th_pt(AdafruitIO_Data *data) {
@@ -183,5 +167,5 @@ void set_th_pt(AdafruitIO_Data *data) {
   Serial.print("received <- ");
   Serial.print("setting temp threshold -> ");
   Serial.println(new_set_th);
-  new_set_th = last_alert_temp;
+  new_set_th = alert_temp;a
 }
