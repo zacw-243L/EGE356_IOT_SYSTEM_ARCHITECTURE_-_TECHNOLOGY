@@ -61,7 +61,10 @@ void setup() {
     Serial.print(".");
     delay(500);
   }
-
+  
+  M5.Lcd.setCursor(30,40,2);
+  M5.Lcd.print(WiFi.localIP());
+  
   // we are connected
   Serial.println();
   Serial.println(io.statusText());
