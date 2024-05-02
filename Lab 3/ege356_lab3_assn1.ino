@@ -36,6 +36,12 @@ AdafruitIO_Feed *analog_ltemp = io.feed("lab3_ltemp");
 
 void setup() {
   M5.begin();
+  M5.IMU.Init();
+  M5.Lcd.setRotation(3);
+  M5.Lcd.fillScreen(BLACK);
+  M5.Lcd.setTextSize(1);
+  M5.Lcd.setCursor(40, 15);
+  M5.IMU.getTempData(&temp);
   
   // set up led pin as an analog output
   #if defined(ARDUINO_ARCH_ESP32)
