@@ -136,7 +136,7 @@ void loop() {
   // instead of tracking millis()
   M5.Lcd.setCursor(30, 95);
   M5.Lcd.printf("Temperature : %.2f C", temp);
-  delay(3000);
+  delay(5000);
 }
 
 void handleMessage(AdafruitIO_Data *data) {
@@ -163,7 +163,7 @@ void handleMessage(AdafruitIO_Data *data) {
    alerted = true;
   //Turns alert green if condition
   if (temp<55.0 & alerted == true)
-   delay(500);
+   delay(5000);
    d_alert1->save(70);
    alerted = false;
   
