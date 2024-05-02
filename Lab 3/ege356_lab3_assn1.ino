@@ -21,19 +21,18 @@
 /************************ Example Starts Here *******************************/
 
 // analog pin 0
-#define TRIMMER_PIN 33
 #define LED_PIN 26
 
 // photocell state
-int current = 0;
-int last = -1;
+// int current = 0;
+// int last = -1;
 float temp = 0.00;
 float last_temp = -1.00;
 
 // set up the 'analog' feed
 // AdafruitIO_Feed *analog = io.feed("lab2_gauge");
-// AdafruitIO_Feed *analog_led = io.feed("lab2_ledctrl");
-// AdafruitIO_Feed *analog_lgage = io.feed("lab2_lingage");
+AdafruitIO_Feed *analog_led = io.feed("lab2_ledctrl");
+AdafruitIO_Feed *analog_lgage = io.feed("lab2_lingage");
 AdafruitIO_Feed *analog_ltemp = io.feed("lab3_ltemp");
 
 void setup() {
@@ -114,13 +113,14 @@ void loop() {
   // save the current state to the analog feed
   // Serial.print("sending -> ");
   // Serial.println(current);
-  analog->save(current);
+  // analog->save(current);
 
   // store last photocell state
   last_temp = temp;
 
   Serial.print("sending temperature -> ");
   Serial.println(temp);
+  analog_ltemp->save(temp);
 
   // wait three seconds (1000 milliseconds == 1 second)
   //
@@ -134,15 +134,35 @@ void loop() {
 void handleMessage(AdafruitIO_Data *data) {
 
   // convert the data to integer
-  // int reading = data->toInt();
+  int reading = data->toInt();
+  bool alertd = false;
+  
 
-  // Serial.print("received <- ");
-  // Serial.println(reading);
-  // current = reading;
+  Serial.print("received <- ");
+  Serial.println(reading);
+  int current = reading;
+  float speed = current/255.0*100;
+
+  analog_lgage->save(speed); 
+  Serial.print("sending <- "); 
+  Serial.println(speed);
+  
+  //Turns alert red if condition
+  if ((temp>=55.0 & speed>80.0)|alerted == true)
+   delay(500);//throttle limiter
+   d_alert1->save(90); 
+   analog_led ->save(80);
+   alerted = true;
+  //Turns alert green if condition
+  if (temp<55.0 & alerted == true)
+   delay(500);
+   d_alert1->save(70);
+   alerted = false;
+  
   // analog_lgage->save(current/255.0*100);
   // Serial.print("sending <- ");
   // Serial.println(current/255.0*100);
 
   // write the current 'reading' to the led
-  // analogWrite(LED_PIN, reading);
+  analogWrite(LED_PIN, reading);
 }
