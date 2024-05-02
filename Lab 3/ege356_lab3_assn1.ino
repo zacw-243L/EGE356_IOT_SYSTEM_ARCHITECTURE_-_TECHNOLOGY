@@ -29,8 +29,8 @@
 float temp = 0.00;
 float last_temp = -1.00;
 
-float alert_temp = 55.0;
-float last_alert_temp = 55.0;
+int alert_temp = 55;
+int last_alert_temp = 55;
 
 int alert1 = 0;
 int last_alert1 = 0;
@@ -183,4 +183,5 @@ void set_th_pt(AdafruitIO_Data *data) {
   Serial.print("received <- ");
   Serial.print("setting temp threshold -> ");
   Serial.println(new_set_th);
+  new_set_th = last_alert_temp;
 }
