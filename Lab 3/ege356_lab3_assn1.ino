@@ -23,25 +23,28 @@
 // analog pin 0
 #define LED_PIN 26
 
-float temp = 0.00;
-float last_temp = -1.00;
-float speed;
-
-float alert_temp = 55.0;
-float last_alert_temp = 55.0;
-
-int alert1 = 0;
-int last_alert1 = 0;
-
-int current = 0;
-int last = -1;
-
 // set up the 'analog' feed
 AdafruitIO_Feed *analog_ltemp = io.feed("lab3_ltemp");
 AdafruitIO_Feed *analog_led = io.feed("lab2_ledctrl");
 AdafruitIO_Feed *analog_lgage = io.feed("lab2_lingage");
 AdafruitIO_Feed *d_alert1 = io.feed("lab3_alert1");
 AdafruitIO_Feed *set_th = io.feed("lab3_set_th");
+
+float temp = 0.00;
+float last_temp = -1.00;
+int current = 0;
+float speed = current/255.0*100;
+float ALERTV;
+
+float alert_temp = 55.0;
+float last_alert_temp = 55.0;
+
+int alert1 = 0;
+int last_alert1 = 0;
+int totaldelay;
+
+int last = -1;
+
 
 void setup() {
   M5.begin();
@@ -97,6 +100,7 @@ void setup() {
   M5.Lcd.print(WiFi.localIP()); //display ip address
   
   // we are connected
+  delay(10000);
   Serial.println();
   Serial.println(io.statusText());
   Serial.println(WiFi.localIP());
@@ -111,15 +115,45 @@ void loop(){
   // io.adafruit.com, and processes any incoming data.
   io.run();
   M5.IMU.getTempData(&temp);
-    
+  totaldelay = 0;
+  
   // return if the value hasn't changed
   if(temp == last_temp)
     return;
   last_temp = temp;
 
+  if(temp < alert_temp & ALERTV > 80)
+    d_alert1->save(70);
+    alert1 = 0;
+    Serial.print("sending Alert1 -> ");
+    Serial.println(alert1);
+    totaldelay+=(1000);
+
   Serial.print("sending temperature -> ");
   Serial.println(temp);
   analog_ltemp->save(temp);
+  totaldelay+=(2000);
+
+  bool tEX = temp > alert_temp;
+  int a = 80;
+  
+  if((speed > 80.0) & tEX == 1){
+    d_alert1->save(90);
+    if(ALERTV < 80){
+      Serial.print("Ledctrl-> ");
+      Serial.println(a);
+      alert1 = 1;
+      Serial.print("sending Alert1 -> ");
+      Serial.println(alert1);
+      totaldelay+=(1000);
+    }
+    tEX = temp > alert_temp;
+    if(current > 80 & speed > 80.0 & tEX == 1 & ALERTV < 80){
+      analog_led->save(80);
+      totaldelay+=(1000);
+    }
+  }
+          
   // wait three seconds (1000 milliseconds == 1 second)
   
   // because there are no active subscriptions, we can use delay()
@@ -127,7 +161,7 @@ void loop(){
   M5.Lcd.setCursor(30, 95);
   M5.Lcd.printf("Temperature : %.2f C", temp);
   
-  delay(6000);
+  delay(totaldelay);
 }
 
 void handleMessage(AdafruitIO_Data *data) {
@@ -137,11 +171,11 @@ void handleMessage(AdafruitIO_Data *data) {
   Serial.print("received <- ");
   Serial.println(reading);
   current = reading; 
-  d_alert1->save(current);
   
-  float speed = current/255.0*100;
   
+  speed = current/255.0*100;
   analog_lgage->save(speed);
+  delay(2000);
   Serial.print("sending <- ");
   Serial.println(speed);
  
@@ -150,38 +184,19 @@ void handleMessage(AdafruitIO_Data *data) {
 }
 
 void set_th_pt(AdafruitIO_Data *data){
-  int new_set_th = data->toInt();
+  String h = data->value();
   
   Serial.print("received <- ");
-  Serial.println(new_set_th);
-  alert_temp = new_set_th;
+  Serial.println(h);
+  alert_temp = h.toFloat();
   Serial.print("setting temp threshold -> ");
   Serial.println(alert_temp);
   
 }
 
 void ALERT (AdafruitIO_Data *data){
-  int new_ALERT = data->toInt();
-
-  if (speed > 80.0 && temp > alert_temp) 
-    analog_led->save(80);
-    int a = 80;
-    Serial.print("Ledctrl-> ");
-    Serial.println(a);
-    // alert1 = 1;
-    // Serial.print("sending Alert1 -> ");
-    // Serial.println(alert1);
-    d_alert1->save(current);
-    
-  if (speed > 80.0 && temp > alert_temp && alert1 == 1)
-    d_alert1->save(90);
-    alert1 = 0;
-    Serial.print("sending Alert1 -> ");
-    Serial.println(alert1);
-  
-  if (temp < alert_temp)
-    alert1 = 0;
-    Serial.print("sending Alert1 -> ");
-    Serial.println(alert1);
-    d_alert1->save(current);
+  String a = data->value();
+  ALERTV = a.toFloat();
+  // Serial.print("AV <-");
+  // Serial.println(ALERTV);
 }
