@@ -158,7 +158,7 @@ void loop(){
     Serial.println(alert1);
     totaldelay+=(1000); 
   }
-    
+  
   delay(totaldelay);
 }
 
