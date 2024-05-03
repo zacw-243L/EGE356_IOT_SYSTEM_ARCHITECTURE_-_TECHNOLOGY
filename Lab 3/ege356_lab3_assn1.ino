@@ -34,7 +34,7 @@ float temp = 0.00;
 float last_temp = -1.00;
 int current = 0;
 float speed = current/255.0*100;
-float ALERTV;
+float ALERTV = 0;
 
 float alert_temp = 55.0;
 float last_alert_temp = 55.0;
@@ -116,8 +116,6 @@ void loop(){
   io.run();
   M5.IMU.getTempData(&temp);
   totaldelay = 0;
-  bool tEX = temp > alert_temp;
-  int a = 80;
   
   // return if the value hasn't changed
   if(temp == last_temp)
@@ -127,14 +125,15 @@ void loop(){
   Serial.print("sending temperature -> ");
   Serial.println(temp);
   analog_ltemp->save(temp);
-  totaldelay+=(2000);
+  totaldelay+=(3000);
 
   M5.Lcd.setCursor(30, 95);
   M5.Lcd.printf("Temperature : %.2f C", temp);
 
-
-  
+  bool tEX = temp > alert_temp;
+  int a = 80;
   if((speed > 80.0) & tEX == 1){
+    d_alert1->save(90);
     if(ALERTV < 80){
       d_alert1->save(90);
       Serial.print("Ledctrl-> ");
@@ -142,23 +141,25 @@ void loop(){
       alert1 = 1;
       Serial.print("sending Alert1 -> ");
       Serial.println(alert1);
+      analog_led->save(80);
       totaldelay+=(1000);
     }
-    tEX = temp > alert_temp;
-    if(current > 80 & speed > 80.0 & tEX == 1 & ALERTV < 80){
+  }
+  if((speed > 31) & current > 80 & tEX == 1){
+    if (ALERTV < 80){
+      d_alert1->save(90);
       analog_led->save(80);
       totaldelay+=(1000);
     }
   }
   
-  if(tEX == 0 & ALERTV > 80){
-    d_alert1->save(70);
-    alert1 = 0;
-    Serial.print("sending Alert1 -> ");
-    Serial.println(alert1);
-    totaldelay+=(1000); 
-  }
-  
+  if((temp < alert_temp) & ALERTV > 80){
+     d_alert1->save(70);
+     alert1 = 0;
+     Serial.print("sending Alert1 -> ");
+     Serial.println(alert1);
+     totaldelay+=(1000);
+   } 
   delay(totaldelay);
 }
 
@@ -195,6 +196,6 @@ void set_th_pt(AdafruitIO_Data *data){
 void ALERT (AdafruitIO_Data *data){
   String a = data->value();
   ALERTV = a.toFloat();
-  // Serial.print("AV <-");
-  // Serial.println(ALERTV);
+  Serial.print("AV <-");
+  Serial.println(ALERTV);
 }
