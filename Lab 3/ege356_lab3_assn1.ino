@@ -116,30 +116,27 @@ void loop(){
   io.run();
   M5.IMU.getTempData(&temp);
   totaldelay = 0;
+  bool tEX = temp > alert_temp;
+  int a = 80;
   
   // return if the value hasn't changed
   if(temp == last_temp)
     return;
   last_temp = temp;
-
-  if(temp < alert_temp & ALERTV > 80)
-    d_alert1->save(70);
-    alert1 = 0;
-    Serial.print("sending Alert1 -> ");
-    Serial.println(alert1);
-    totaldelay+=(1000);
-
+  
   Serial.print("sending temperature -> ");
   Serial.println(temp);
   analog_ltemp->save(temp);
   totaldelay+=(2000);
 
-  bool tEX = temp > alert_temp;
-  int a = 80;
+  M5.Lcd.setCursor(30, 95);
+  M5.Lcd.printf("Temperature : %.2f C", temp);
+
+
   
   if((speed > 80.0) & tEX == 1){
-    d_alert1->save(90);
     if(ALERTV < 80){
+      d_alert1->save(90);
       Serial.print("Ledctrl-> ");
       Serial.println(a);
       alert1 = 1;
@@ -153,14 +150,15 @@ void loop(){
       totaldelay+=(1000);
     }
   }
-          
-  // wait three seconds (1000 milliseconds == 1 second)
   
-  // because there are no active subscriptions, we can use delay()
-  // instead of tracking millis()
-  M5.Lcd.setCursor(30, 95);
-  M5.Lcd.printf("Temperature : %.2f C", temp);
-  
+  if(tEX == 0 & ALERTV > 80){
+    d_alert1->save(70);
+    alert1 = 0;
+    Serial.print("sending Alert1 -> ");
+    Serial.println(alert1);
+    totaldelay+=(1000); 
+  }
+    
   delay(totaldelay);
 }
 
