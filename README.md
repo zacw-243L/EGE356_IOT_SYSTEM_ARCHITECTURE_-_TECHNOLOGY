@@ -3,4 +3,6 @@ This repo is answers for the Labs done in (EGE356) IoT SYSTEM ARCHITECTURE & TEC
 
 <br>
 
-# Lab 6 is part of an assignment that spans multiple files
+# Lab 6
+<br>
+this is an assignment that spans multiple files and multiple weeks just for part 1
